@@ -1,0 +1,133 @@
+@layer motion {
+  /* ========================================================= */
+  /* LOADING SCREEN                                            */
+  /* ========================================================= */
+  @keyframes loading-bar-fill {
+    0%   { inline-size: 0; }
+    100% { inline-size: 100%; }
+  }
+
+  @keyframes loading-fade-out {
+    0%   { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background: var(--black-950);
+    animation: loading-fade-out 0.6s var(--ease-out) 2.4s forwards;
+    pointer-events: auto;
+  }
+
+  .loading-screen::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    animation: loading-fade-out 0.6s var(--ease-out) 2.4s forwards;
+  }
+
+  .loading-logo {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--white-90);
+  }
+
+  .loading-bar {
+    inline-size: clamp(10rem, 20vw, 16rem);
+    block-size: 3px;
+    background: var(--white-06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .loading-bar-fill {
+    block-size: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: loading-bar-fill 2s var(--ease-out) forwards;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  /* ========================================================= */
+  /* CARD ENTRANCE — staggered fade-in                         */
+  /* ========================================================= */
+  @keyframes card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .bento-card,
+  #view-nft:checked ~ .app-shell .view--nft .bento-card,
+  #view-food:checked ~ .app-shell .view--food .bento-card,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .bento-card {
+    animation: card-enter var(--dur-slow) var(--ease-out) both;
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .card--hero,
+  #view-nft:checked ~ .app-shell .view--nft .card--hero,
+  #view-food:checked ~ .app-shell .view--food .card--hero,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .card--hero {
+    animation-delay: 0ms;
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .card--b,
+  #view-nft:checked ~ .app-shell .view--nft .card--b,
+  #view-food:checked ~ .app-shell .view--food .card--b,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .card--b {
+    animation-delay: 60ms;
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .card--c,
+  #view-nft:checked ~ .app-shell .view--nft .card--c,
+  #view-food:checked ~ .app-shell .view--food .card--c,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .card--c {
+    animation-delay: 120ms;
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .card--d,
+  #view-nft:checked ~ .app-shell .view--nft .card--d,
+  #view-food:checked ~ .app-shell .view--food .card--d,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .card--d {
+    animation-delay: 180ms;
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .card--e,
+  #view-nft:checked ~ .app-shell .view--nft .card--e,
+  #view-food:checked ~ .app-shell .view--food .card--e,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .card--e {
+    animation-delay: 240ms;
+  }
+
+  #view-f1:checked ~ .app-shell .view--f1 .card--f,
+  #view-nft:checked ~ .app-shell .view--nft .card--f,
+  #view-food:checked ~ .app-shell .view--food .card--f,
+  #view-knowledge:checked ~ .app-shell .view--knowledge .card--f {
+    animation-delay: 300ms;
+  }
+
+  /* ========================================================= */
+  /* REDUCED MOTION                                            */
+  /* ========================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .bento-card {
+      animation: none !important;
+      transition-duration: 0ms !important;
+    }
+  }
+}

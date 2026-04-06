@@ -1,0 +1,42 @@
+@layer components {
+  /* Card accent glow on hover — subtle colored edge */
+  .bento-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    opacity: 0;
+    z-index: -1;
+    background: radial-gradient(
+      ellipse 80% 60% at 50% 100%,
+      var(--accent-glow),
+      transparent 70%
+    );
+    transition: opacity var(--dur-mid) ease;
+  }
+
+  .bento-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Stat cards — center large numbers */
+  .card--d,
+  .card--e {
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* Card inner decoration — subtle grid pattern on hero */
+  .card--hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background:
+      linear-gradient(var(--white-100) 1px, transparent 1px) 0 0 / 3rem 3rem,
+      linear-gradient(90deg, var(--white-100) 1px, transparent 1px) 0 0 / 3rem 3rem;
+    mask-image: radial-gradient(ellipse 80% 80% at 70% 50%, black 20%, transparent 70%);
+  }
+}

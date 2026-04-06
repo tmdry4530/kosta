@@ -1,0 +1,163 @@
+@layer states {
+  /* ========================================================= */
+  /* VIEW SWITCHING                                            */
+  /* ========================================================= */
+  #view-f1:checked ~ .app-shell .view--f1,
+  #view-nft:checked ~ .app-shell .view--nft,
+  #view-food:checked ~ .app-shell .view--food,
+  #view-knowledge:checked ~ .app-shell .view--knowledge {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  /* ========================================================= */
+  /* PER-VIEW THEME (auto color based on active view)          */
+  /* ========================================================= */
+  #view-f1:checked ~ .app-shell {
+    --accent: var(--f1-red);
+    --accent-soft: var(--f1-red-soft);
+    --accent-glow: var(--f1-glow);
+  }
+
+  #view-nft:checked ~ .app-shell {
+    --accent: var(--nft-violet);
+    --accent-soft: var(--nft-violet-soft);
+    --accent-glow: var(--nft-glow);
+  }
+
+  #view-food:checked ~ .app-shell {
+    --accent: var(--food-orange);
+    --accent-soft: var(--food-orange-soft);
+    --accent-glow: var(--food-glow);
+  }
+
+  #view-knowledge:checked ~ .app-shell {
+    --accent: var(--know-blue);
+    --accent-soft: var(--know-blue-soft);
+    --accent-glow: var(--know-glow);
+  }
+
+  /* ========================================================= */
+  /* NAV CHIP ACTIVE STATE                                     */
+  /* ========================================================= */
+  /* ========================================================= */
+  /* FOOD ORDER MODALS                                         */
+  /* ========================================================= */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(0 0% 0% / 0.7);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--dur-mid) ease,
+      visibility 0s linear var(--dur-mid);
+  }
+
+  .modal-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-2xl) var(--space-xl);
+    border-radius: var(--radius-xl);
+    background: hsl(0 0% 8%);
+    border: 1px solid var(--white-10);
+    text-align: center;
+    max-inline-size: 24rem;
+    transform: translateY(1rem) scale(0.96);
+    transition: transform var(--dur-mid) var(--ease-spring);
+  }
+
+  .modal-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .modal-desc {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .modal-price {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-xl);
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--white-100);
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: 600;
+    cursor: pointer;
+    margin-block-start: var(--space-sm);
+    transition: transform var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+  }
+
+  .modal-close:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.5rem 2rem var(--accent-glow);
+  }
+
+  /* Show overlay + correct panel when checkbox is checked */
+  #modal-food-1:checked ~ .app-shell .modal-overlay,
+  #modal-food-2:checked ~ .app-shell .modal-overlay,
+  #modal-food-3:checked ~ .app-shell .modal-overlay,
+  #modal-food-4:checked ~ .app-shell .modal-overlay,
+  #modal-food-5:checked ~ .app-shell .modal-overlay,
+  #modal-food-6:checked ~ .app-shell .modal-overlay,
+  #modal-food-7:checked ~ .app-shell .modal-overlay,
+  #modal-food-8:checked ~ .app-shell .modal-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  #modal-food-1:checked ~ .app-shell .modal-panel--1,
+  #modal-food-2:checked ~ .app-shell .modal-panel--2,
+  #modal-food-3:checked ~ .app-shell .modal-panel--3,
+  #modal-food-4:checked ~ .app-shell .modal-panel--4,
+  #modal-food-5:checked ~ .app-shell .modal-panel--5,
+  #modal-food-6:checked ~ .app-shell .modal-panel--6,
+  #modal-food-7:checked ~ .app-shell .modal-panel--7,
+  #modal-food-8:checked ~ .app-shell .modal-panel--8 {
+    display: flex;
+    transform: none;
+  }
+
+  #view-f1:checked ~ .app-shell label[for="view-f1"],
+  #view-nft:checked ~ .app-shell label[for="view-nft"],
+  #view-food:checked ~ .app-shell label[for="view-food"],
+  #view-knowledge:checked ~ .app-shell label[for="view-knowledge"] {
+    color: var(--text-primary);
+    background: hsl(0 0% 100% / 0.1);
+  }
+}

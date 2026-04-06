@@ -1,0 +1,352 @@
+'use strict';
+
+(function(window, $, undefined) {
+  var app = window.WeatherEats = window.WeatherEats || {};
+  var state = {
+    lat: app.constants.defaultCoords.lat,
+    lon: app.constants.defaultCoords.lon,
+    accuracy: null,
+    locationSource: 'default',
+    locationDetails: null,
+    locationWarning: '',
+    updatedAt: null
+  };
+
+  function cacheElements() {
+    return {
+      $status: $('#home-status'),
+      $manualPanel: $('#manual-location-panel'),
+      $weatherCard: $('#weather-card'),
+      $recommendations: $('#recommendation-list'),
+      $forecast: $('#forecast-list')
+    };
+  }
+
+  function renderWeatherCard(weather) {
+    var primaryLocation = state.locationDetails && state.locationDetails.regionLabel
+      ? state.locationDetails.regionLabel
+      : weather.locationName;
+    var sourceLabel = {
+      current: '현재 위치',
+      manual: '직접 입력 위치',
+      default: '기본 위치'
+    }[state.locationSource] || '위치 정보';
+    var radiusLabel = app.constants.searchRadius % 1000 === 0
+      ? (app.constants.searchRadius / 1000) + 'km'
+      : app.constants.searchRadius + 'm';
+    var updatedLabel = '';
+
+    if (state.updatedAt instanceof Date && !Number.isNaN(state.updatedAt.getTime())) {
+      updatedLabel = String(state.updatedAt.getHours()).padStart(2, '0') + ':' + String(state.updatedAt.getMinutes()).padStart(2, '0');
+    }
+
+    var accuracyLabel = '';
+
+    if (Number.isFinite(state.accuracy) && state.accuracy > 0) {
+      accuracyLabel = app.utils.formatDistance(state.accuracy);
+    }
+
+    var locationDetail = '';
+
+    if (!state.locationDetails && weather.locationName && weather.locationName !== primaryLocation) {
+      locationDetail = '날씨 기준 도시: ' + weather.locationName;
+    }
+
+    var locationWarningHtml = state.locationWarning
+      ? '<div class="weather-meta"><span class="result-badge">⚠ ' + app.utils.escapeHtml(state.locationWarning) + '</span></div>'
+      : '';
+    var sourceBadgesHtml = '<div class="weather-meta"><span class="result-badge">🌐 OpenWeatherMap</span><span class="result-badge">🗺 Kakao Local</span></div>';
+
+    var extrasHtml = weather.extraMessages.map(function(message) {
+      return '<span class="result-badge">💡 ' + app.utils.escapeHtml(message) + '</span>';
+    }).join('');
+
+    var html = [
+      '<div class="weather-card-top">',
+      '  <p class="section-kicker">' + app.utils.escapeHtml(sourceLabel) + '</p>',
+      '  <span class="result-badge">' + app.utils.escapeHtml(weather.weatherMain) + '</span>',
+      '</div>',
+      '<div class="weather-main">',
+      '  <img class="weather-icon" src="https://openweathermap.org/img/wn/' + app.utils.escapeHtml(weather.icon) + '@2x.png" alt="' + app.utils.escapeHtml(weather.description) + '">',
+      '  <div class="weather-main-primary">',
+      '    <div class="weather-temp">' + app.utils.escapeHtml(app.utils.formatTemperature(weather.temp)) + '</div>',
+      '    <p class="weather-description">' + app.utils.escapeHtml(weather.description) + '</p>',
+      '  </div>',
+      '  <div class="weather-main-location">',
+      '    <h2 id="weather-heading" class="section-title weather-location">📍 ' + app.utils.escapeHtml(primaryLocation) + '</h2>',
+      locationDetail ? '    <p class="weather-location-detail">' + app.utils.escapeHtml(locationDetail) + '</p>' : '',
+      '    <div class="weather-location-meta">',
+      accuracyLabel ? '      <span class="result-badge">🎯 정확도 ' + app.utils.escapeHtml(accuracyLabel) + '</span>' : '',
+      '      <span class="result-badge">🗺 반경 ' + app.utils.escapeHtml(radiusLabel) + '</span>',
+      updatedLabel ? '      <span class="result-badge">⏱ ' + app.utils.escapeHtml(updatedLabel) + ' 기준</span>' : '',
+      '    </div>',
+      '  </div>',
+      '</div>',
+      '<div class="weather-meta">',
+      '  <span class="result-badge">💧 습도 ' + app.utils.escapeHtml(weather.humidity) + '%</span>',
+      '  <span class="result-badge">💨 풍속 ' + app.utils.escapeHtml(weather.windSpeed) + 'm/s</span>',
+      '</div>',
+      '<div class="weather-summary">',
+      '  <strong>' + app.utils.escapeHtml(weather.summaryMessage) + '</strong>',
+      '  <p>오늘 날씨를 바탕으로 어울리는 메뉴를 바로 추천해드릴게요.</p>',
+      sourceBadgesHtml,
+      locationWarningHtml,
+      extrasHtml ? '<div class="weather-meta">' + extrasHtml + '</div>' : '',
+      '</div>'
+    ].join('');
+
+    app.ui.setTheme(weather.themeClass);
+    cache.$weatherCard.html(html);
+  }
+
+  function renderWeatherCardSkeleton() {
+    cache.$weatherCard.html([
+      '<div class="weather-card-top">',
+      '  <div class="skeleton-block" style="height:18px;width:88px;"></div>',
+      '  <div class="skeleton-block" style="height:28px;width:92px;"></div>',
+      '</div>',
+      '<div class="weather-main weather-main-loading">',
+      '  <div class="skeleton-block" style="height:76px;width:76px;border-radius:24px;"></div>',
+      '  <div class="weather-main-primary">',
+      '    <div class="skeleton-block" style="height:54px;width:120px;"></div>',
+      '    <div class="skeleton-block" style="height:18px;width:96px;"></div>',
+      '  </div>',
+      '  <div class="weather-main-location">',
+      '    <div class="skeleton-block" style="height:28px;width:150px;"></div>',
+      '    <div class="skeleton-block" style="height:16px;width:120px;"></div>',
+      '    <div class="weather-location-meta">',
+      '      <div class="skeleton-block" style="height:32px;width:110px;"></div>',
+      '      <div class="skeleton-block" style="height:32px;width:90px;"></div>',
+      '    </div>',
+      '  </div>',
+      '</div>',
+      '<div class="weather-meta">',
+      '  <div class="skeleton-block" style="height:32px;width:96px;"></div>',
+      '  <div class="skeleton-block" style="height:32px;width:92px;"></div>',
+      '</div>',
+      '<div class="weather-summary">',
+      '  <div class="skeleton-block" style="height:20px;width:190px;margin-bottom:10px;"></div>',
+      '  <div class="skeleton-block" style="height:16px;width:100%;margin-bottom:8px;"></div>',
+      '  <div class="skeleton-block" style="height:16px;width:70%;"></div>',
+      '</div>'
+    ].join(''));
+  }
+
+  function renderForecast(forecastItems) {
+    if (!forecastItems.length) {
+      cache.$forecast.html('<div class="empty-state is-visible"><h3>예보를 불러오지 못했어요.</h3><p>잠시 후 다시 시도해주세요.</p></div>');
+      return;
+    }
+
+    var html = forecastItems.map(function(item) {
+      return [
+        '<article class="forecast-card">',
+        '  <p class="forecast-day">' + app.utils.escapeHtml(item.dayLabel) + '</p>',
+        '  <div class="forecast-icon">' + app.utils.escapeHtml(item.icon) + '</div>',
+        '  <p class="forecast-temp">' + app.utils.escapeHtml(item.temp) + '°C</p>',
+        '  <p class="forecast-desc">' + app.utils.escapeHtml(item.description) + '</p>',
+        '</article>'
+      ].join('');
+    }).join('');
+
+    cache.$forecast.html(html);
+  }
+
+  function renderRecommendations(recommendations) {
+    if (!recommendations.length) {
+      cache.$recommendations.html('<div class="empty-state is-visible"><h3>추천 메뉴를 찾지 못했어요.</h3><p>다른 위치로 다시 시도해주세요.</p></div>');
+      return;
+    }
+
+    var html = recommendations.map(function(item) {
+      return [
+        '<button class="recommendation-card" type="button" data-keyword="' + app.utils.escapeHtml(item.keyword) + '">',
+        '  <div class="recommendation-icon">' + app.utils.escapeHtml(item.emoji) + '</div>',
+        '  <div class="recommendation-title-row">',
+        '    <strong class="recommendation-title">' + app.utils.escapeHtml(item.name) + '</strong>',
+        '    <span class="result-badge" data-count-for="' + app.utils.escapeHtml(item.keyword) + '">검색 중…</span>',
+        '  </div>',
+        '  <p class="recommendation-subtitle">' + app.utils.escapeHtml(item.reason) + '</p>',
+        '  <div class="recommendation-tags">',
+        '    <span class="result-badge">🔎 ' + app.utils.escapeHtml(item.keyword) + '</span>',
+        '    <span class="result-badge">📍 내 주변 3km</span>',
+        '  </div>',
+        '</button>'
+      ].join('');
+    }).join('');
+
+    cache.$recommendations.html(html);
+  }
+
+  function syncNearbySearchLinks() {
+    var href = 'search.html?' + app.utils.buildQueryString({
+      keyword: '맛집',
+      lat: state.lat,
+      lon: state.lon,
+      page: 1
+    });
+
+    $('[data-nearby-search-link]').attr('href', href);
+  }
+
+  function updateRecommendationCounts(recommendations) {
+    $.each(recommendations, function(_, item) {
+      app.kakao.countPlaces(item.keyword, state.lat, state.lon)
+        .done(function(count) {
+          cache.$recommendations.find('[data-count-for="' + item.keyword + '"]').text(count + '개');
+        })
+        .fail(function() {
+          cache.$recommendations.find('[data-count-for="' + item.keyword + '"]').text('설정 필요');
+        });
+    });
+  }
+
+  function resolveLocationDetails(lat, lon) {
+    return $.Deferred(function(deferred) {
+      if (!app.kakao || !app.kakao.reverseGeocodeRegion) {
+        deferred.resolve(null);
+        return;
+      }
+
+      app.kakao.reverseGeocodeRegion(lat, lon)
+        .done(function(locationDetails) {
+          deferred.resolve(locationDetails);
+        })
+        .fail(function() {
+          deferred.resolve(null);
+        });
+    }).promise();
+  }
+
+  function showManualPromptForLowAccuracy(coords) {
+    if (!app.utils.shouldPromptManualLocation(coords.accuracy)) {
+      app.ui.hideManualLocationForm(cache.$manualPanel);
+      return;
+    }
+
+    app.ui.renderManualLocationForm(cache.$manualPanel, {
+      title: '위치 오차가 커서 직접 보정할 수 있어요.',
+      description: '현재 위치 정확도가 약 ' + app.utils.formatDistance(coords.accuracy) + '예요. 동네 추천이 다르면 위도/경도를 직접 수정해보세요.',
+      lat: coords.lat,
+      lon: coords.lon,
+      submitText: '이 위치로 다시 추천받기',
+      onSubmit: function(nextCoords) {
+        loadWeatherByCoords(nextCoords.lat, nextCoords.lon, '입력한 위치 기준으로 다시 불러오는 중이에요.', {
+          source: 'manual',
+          accuracy: null
+        });
+      }
+    });
+  }
+
+  function loadWeatherByCoords(lat, lon, statusMessage, options) {
+    var settings = $.extend({
+      source: 'default'
+    }, options || {});
+
+    state.lat = lat;
+    state.lon = lon;
+    state.accuracy = Number.isFinite(settings.accuracy) ? settings.accuracy : null;
+    state.locationSource = settings.source;
+    state.locationWarning = settings.locationWarning || '';
+    state.updatedAt = new Date();
+    syncNearbySearchLinks();
+
+    app.ui.showBanner(cache.$status, 'info', statusMessage || '날씨와 추천 메뉴를 불러오는 중이에요.');
+    renderWeatherCardSkeleton();
+    cache.$forecast.html('<div class="skeleton-block" style="height: 120px;"></div>');
+    cache.$recommendations.html('<div class="skeleton-block" style="height: 220px;"></div>');
+
+    $.when(app.weather.fetchCurrentWeather(lat, lon), app.weather.fetchForecast(lat, lon), resolveLocationDetails(lat, lon))
+      .done(function(currentResponse, forecastResponse, locationDetails) {
+        var weather = app.weather.normalizeCurrentWeather(currentResponse[0]);
+        var forecast = app.weather.extractForecastDays(forecastResponse[0]);
+        var displayLocation = locationDetails && locationDetails.regionLabel ? locationDetails.regionLabel : weather.locationName;
+
+        state.locationDetails = locationDetails;
+        renderWeatherCard(weather);
+        renderForecast(forecast);
+        renderRecommendations(weather.recommendations);
+        updateRecommendationCounts(weather.recommendations);
+        app.ui.showBanner(cache.$status, 'success', displayLocation + ' 기준으로 추천을 준비했어요.');
+        app.ui.hideManualLocationForm(cache.$manualPanel);
+      })
+      .fail(function(error) {
+        state.locationDetails = null;
+        var message = app.utils.buildApiErrorMessage('weather', error, '날씨 정보를 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
+        app.ui.showBanner(cache.$status, 'error', message);
+        cache.$weatherCard.html('<div class="empty-state is-visible"><h3>날씨 정보를 불러오지 못했어요.</h3><p>API 키 설정과 네트워크 상태를 확인해주세요.</p></div>');
+        cache.$forecast.empty();
+        cache.$recommendations.empty();
+      });
+  }
+
+  function requestCurrentLocation() {
+    app.utils.getCurrentPosition()
+      .done(function(coords) {
+        loadWeatherByCoords(coords.lat, coords.lon, '현재 위치 기준으로 추천을 준비하고 있어요.', {
+          source: 'current',
+          accuracy: coords.accuracy,
+          locationWarning: coords.warning || ''
+        });
+
+        showManualPromptForLowAccuracy(coords);
+      })
+      .fail(function(error) {
+        app.ui.showBanner(cache.$status, 'info', error.message + ' 기본 위치로 먼저 보여드릴게요.');
+        loadWeatherByCoords(app.constants.defaultCoords.lat, app.constants.defaultCoords.lon, app.constants.defaultCoords.label + ' 기준으로 추천을 불러오는 중이에요.', {
+          source: 'default',
+          locationWarning: '위치 권한이 없어서 기본 위치를 사용 중이에요.'
+        });
+        app.ui.renderManualLocationForm(cache.$manualPanel, {
+          title: '위치를 직접 입력해 다시 추천받기',
+          description: '권한 허용이 어렵다면 위도와 경도로 원하는 지역을 직접 지정할 수 있어요.',
+          onSubmit: function(coords) {
+            loadWeatherByCoords(coords.lat, coords.lon, '입력한 위치 기준으로 다시 불러오는 중이에요.', {
+              source: 'manual',
+              accuracy: null
+            });
+          }
+        });
+      });
+  }
+
+  function bindEvents() {
+    $('#refresh-location-button, #hero-refresh-button').on('click', function() {
+      requestCurrentLocation();
+    });
+
+    $(document).on('click', '[data-nearby-search-link]', function(event) {
+      event.preventDefault();
+      app.utils.moveToPage('search.html', {
+        keyword: '맛집',
+        lat: state.lat,
+        lon: state.lon,
+        page: 1
+      });
+    });
+
+    cache.$recommendations.on('click', '.recommendation-card', function(event) {
+      var keyword = $(event.currentTarget).data('keyword');
+      app.utils.moveToPage('search.html', {
+        keyword: keyword,
+        lat: state.lat,
+        lon: state.lon,
+        page: 1
+      });
+    });
+  }
+
+  var cache;
+
+  $(function() {
+    if ($('body').data('page') !== 'home') {
+      return;
+    }
+
+    cache = cacheElements();
+    syncNearbySearchLinks();
+    bindEvents();
+    requestCurrentLocation();
+  });
+})(window, window.jQuery);

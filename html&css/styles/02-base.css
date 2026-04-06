@@ -1,0 +1,18 @@
+@layer base {
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    background: var(--bg-app);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    block-size: 100dvh;
+    overflow: hidden;
+    color: var(--text-primary);
+  }
+}
