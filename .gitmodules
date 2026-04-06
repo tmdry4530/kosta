@@ -1,0 +1,6 @@
+[submodule "ajax"]
+	path = ajax
+	url = https://github.com/tmdry4530/kosta-ajax.git
+[submodule "html&css"]
+	path = html&css
+	url = https://github.com/tmdry4530/kosta-html-project.git
