@@ -1,0 +1,17 @@
+{
+  "id": "cointelegraph",
+  "name": "Cointelegraph",
+  "language": "en",
+  "jobs": [
+    {
+      "name": "cointelegraph_root",
+      "url": "https://cointelegraph.com/",
+      "source": "links",
+      "depth": 1,
+      "limit": 1,
+      "formats": ["markdown"],
+      "render": false
+    }
+  ],
+  "parser": "cointelegraph_parser"
+}

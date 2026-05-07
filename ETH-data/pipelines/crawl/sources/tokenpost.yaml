@@ -1,0 +1,17 @@
+{
+  "id": "tokenpost",
+  "name": "TokenPost",
+  "language": "ko",
+  "jobs": [
+    {
+      "name": "tokenpost_root",
+      "url": "https://www.tokenpost.kr/",
+      "source": "links",
+      "depth": 1,
+      "limit": 1,
+      "formats": ["markdown"],
+      "render": false
+    }
+  ],
+  "parser": "tokenpost_parser"
+}

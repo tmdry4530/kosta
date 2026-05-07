@@ -1,0 +1,47 @@
+# Local OMX state
+.omx/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Secrets / local env
+.env
+.env.local
+*.local
+
+# Node
+node_modules/
+apps/*/node_modules/
+apps/*/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+pipelines/.venv/
+
+# Pipeline outputs / caches
+pipelines/data/crawled/
+pipelines/data/processed/
+pipelines/data/raw/
+exchange_flow_data/
+!exchange_flow_data/
+!exchange_flow_data/*.csv
+price_data/
+!price_data/
+price_data/*
+!price_data/eth_price.csv
+whale_data/
+
+# Logs
+*.log
+
+# Local OMX/codex state
+.omc/
+dogfood-output/
+# Agent instructions
+**/AGENTS.md

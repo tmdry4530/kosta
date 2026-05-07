@@ -1,0 +1,21 @@
+{
+  "name": "eth-data",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:api": "npm --prefix apps/api run dev",
+    "dev": "sh -c 'trap \"kill 0\" EXIT INT TERM; npm run dev:api & npm run dev:web & wait'",
+    "lint:web": "npm --prefix apps/web run lint",
+    "lint:api": "npm --prefix apps/api run lint",
+    "lint": "npm run lint:api && npm run lint:web",
+    "typecheck:web": "npm --prefix apps/web run typecheck",
+    "typecheck:api": "npm --prefix apps/api run typecheck",
+    "typecheck": "npm run typecheck:api && npm run typecheck:web",
+    "test:web": "npm --prefix apps/web run test",
+    "test:api": "npm --prefix apps/api run test",
+    "test": "npm run test:api && npm run test:web",
+    "build:web": "npm --prefix apps/web run build",
+    "build:api": "npm --prefix apps/api run build",
+    "build": "npm run build:api && npm run build:web"
+  }
+}

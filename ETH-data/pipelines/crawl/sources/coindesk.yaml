@@ -1,0 +1,20 @@
+{
+  "id": "coindesk",
+  "name": "CoinDesk",
+  "language": "en",
+  "jobs": [
+    {
+      "name": "coindesk_sitemap",
+      "url": "https://www.coindesk.com/sitemap",
+      "source": "links",
+      "depth": 2,
+      "limit": 99,
+      "formats": ["markdown"],
+      "render": false,
+      "options": {
+        "includePatterns": ["**/sitemap/**", "**/sitemap"]
+      }
+    }
+  ],
+  "parser": "coindesk_parser"
+}
