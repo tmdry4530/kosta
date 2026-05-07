@@ -176,7 +176,7 @@ export default function App() {
         <header className="flex flex-col items-center justify-center text-center py-12">
           <div className="font-display text-sm uppercase tracking-[2px] text-brand-muted mb-4">When Whales Move</div>
           <h1 className="font-display font-light text-4xl md:text-6xl lg:text-7xl xl:text-[80px] leading-tight tracking-tight text-brand-text mb-6">
-            시장이 흔들릴 때,<br className="hidden md:block" /> 큰 지갑은 무엇을 했을까?
+            시장이 흔들릴 때,<br className="hidden md:block" /> 고래들은 무엇을 했을까?
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-brand-muted font-body mb-12">
             복잡한 블록체인 용어 대신, 고래의 자금 흐름을 역사적 사건 위에 얹어 보여줍니다.

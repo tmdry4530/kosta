@@ -1,23 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-
-@font-face {
-    font-family: 'GmarketSans';
-    font-weight: 300;
-    font-style: normal;
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff') format('woff');
-}
-@font-face {
-    font-family: 'GmarketSans';
-    font-weight: 500;
-    font-style: normal;
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-}
-@font-face {
-    font-family: 'GmarketSans';
-    font-weight: 700;
-    font-style: normal;
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
-}
+@import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
 
 @import "tailwindcss";
 
@@ -30,8 +12,8 @@
   --color-brand-surface: rgba(255, 255, 255, 0.03);
   --color-brand-surface-hover: rgba(255, 255, 255, 0.08);
 
-  --font-display: "Quicksand", "GmarketSans", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "GmarketSans", "Quicksand", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Quicksand", "NanumSquareRound", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "NanumSquareRound", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
