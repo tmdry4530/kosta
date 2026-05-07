@@ -1,0 +1,65 @@
+node_modules/
+.pnpm-store/
+dist/
+server/dist/
+.env
+.env.*
+!.env.example
+.syncspace-data/
+server/.syncspace-data/
+.vite/
+
+# Repository documentation is tracked under docs/.
+# Keep ad-hoc markdown drafts ignored unless explicitly allowed below.
+*.md
+!/README.md
+!/docs/
+!/docs/**/*.md
+# Test scripts and test output
+scripts/verify-*.sh
+scripts/*test*
+scripts/*spec*
+e2e/
+test/
+tests/
+__tests__/
+__snapshots__/
+*.test.*
+*.spec.*
+*.e2e.*
+*.snap
+playwright.config.*
+vitest.config.*
+cypress.config.*
+coverage/
+playwright-report/
+test-results/
+.playwright/
+.nyc_output/
+lcov.info
+*.lcov
+junit*.xml
+*.tap
+*.trx
+
+# Local agent, AI, and QA artifacts
+.omx/
+.gstack/
+.codex/
+.claude/
+.agents/
+.cursor/
+.ai/
+.ai-*/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+CODEX.md
+.cursorrules
+dogfood-output/
+stitch-output/
+*.log
+
+# Lighthouse temporary profiles accidentally created on Windows-style paths
+C:\\Users*/
+C:\Users*/
