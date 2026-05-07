@@ -4,3 +4,12 @@
 [submodule "html&css"]
 	path = html&css
 	url = https://github.com/tmdry4530/kosta-html-project.git
+[submodule "SyncSpace"]
+	path = SyncSpace
+	url = https://github.com/tmdry4530/SyncSpace.git
+[submodule "Whale-move"]
+	path = Whale-move
+	url = https://github.com/tmdry4530/Whale-move.git
+[submodule "laser-survive"]
+	path = laser-survive
+	url = https://github.com/tmdry4530/laser-survive.git

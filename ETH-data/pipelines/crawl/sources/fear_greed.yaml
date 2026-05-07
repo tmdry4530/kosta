@@ -1,7 +1,0 @@
-{
-  "id": "fear_greed",
-  "name": "Fear & Greed Index",
-  "language": "en",
-  "schedule": "per_run",
-  "api_url": "https://api.alternative.me/fng/?limit=0&format=json"
-}
