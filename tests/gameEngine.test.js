@@ -1344,6 +1344,45 @@ test('sweep lasers stay active for one second and then disappear without remnant
   assert.equal(engine.lasers.length, 0);
 });
 
+test('laser fire callback runs when a warning laser starts firing', async () => {
+  installBrowserMocks();
+  const { GameEngine } = await import(`../src/gameEngine.js?test=${Date.now()}-${Math.random()}`);
+  const canvas = {
+    width: 0,
+    height: 0,
+    getContext: () => createCanvasContext(),
+  };
+  const fired = [];
+
+  const engine = new GameEngine({
+    canvas,
+    mode: 'endless',
+    onGameOver: () => {},
+    onLaserFire: (laser) => fired.push(laser),
+    onUpdateHUD: () => {},
+  });
+
+  engine.lasers = [
+    {
+      kind: 'PURSUIT',
+      isVertical: false,
+      index: 3,
+      waveOrder: 1,
+      waveSize: 4,
+      state: 'WARNING',
+      stateTimer: 0.05,
+      lockedOn: true,
+    },
+  ];
+
+  engine.handleLasers(0.05);
+
+  assert.deepEqual(fired, [
+    { kind: 'PURSUIT', isVertical: false, index: 3, waveOrder: 1, waveSize: 4 },
+  ]);
+  assert.equal(engine.lasers[0].state, 'FIRING');
+});
+
 test('item relocates if its row or column gets deleted', async () => {
   installBrowserMocks();
   const originalRandom = Math.random;

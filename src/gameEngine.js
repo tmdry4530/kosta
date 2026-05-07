@@ -1255,6 +1255,13 @@ export class GameEngine {
         laser.state = 'FIRING';
         laser.stateTimer = laser.kind === 'SWEEP' ? 1 : 0.3;
         this.screenShake = laser.kind === 'SWEEP' ? 2.5 : 4;
+        this.config.onLaserFire?.({
+          kind: laser.kind,
+          isVertical: laser.isVertical,
+          index: laser.index,
+          waveOrder: laser.waveOrder,
+          waveSize: laser.waveSize,
+        });
 
         const hit = (laser.isVertical && this.player.x === laser.index)
           || (!laser.isVertical && this.player.y === laser.index);

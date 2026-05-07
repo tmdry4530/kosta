@@ -1,5 +1,6 @@
 import { loadStats, saveGameResult } from "./db.js";
 import { GameEngine } from "./gameEngine.js";
+import { createSoundEffects } from "./sound.js";
 import {
   fetchLeaderboard,
   fetchPlayerBest,
@@ -73,6 +74,102 @@ let testModeEnabled =
 let lastFinishedTime = null;
 let lastScoreSaved = false;
 let lastRewardClaim = null;
+const soundEffects = createSoundEffects();
+const botModeEnabled =
+  new URLSearchParams(window.location.search).get("bot") === "1";
+
+function getBotSnapshot() {
+  return {
+    currentScreen,
+    currentMode,
+    testModeEnabled,
+    lastFinishedTime,
+    engine: engine
+      ? {
+          running: engine.running,
+          timeAlive: engine.timeAlive,
+          round: engine.round,
+          laserTimer: engine.laserTimer,
+          item: engine.item
+            ? {
+                row: engine.item.row,
+                col: engine.item.col,
+                type: engine.item.type,
+              }
+            : null,
+          player: {
+            x: engine.player.x,
+            y: engine.player.y,
+            lastMoveTime: engine.player.lastMoveTime,
+          },
+          activeRows: [...engine.activeRows],
+          activeCols: [...engine.activeCols],
+          lasers: engine.lasers.map((laser) => ({
+            kind: laser.kind,
+            isVertical: laser.isVertical,
+            index: laser.index,
+            state: laser.state,
+            stateTimer: laser.stateTimer,
+            lockedOn: laser.lockedOn,
+            waveOrder: laser.waveOrder ?? 0,
+            waveSize: laser.waveSize ?? 1,
+          })),
+        }
+      : null,
+  };
+}
+
+function queueBotMove(direction) {
+  if (!engine?.running) {
+    return false;
+  }
+
+  const movement = {
+    up: { dx: 0, dy: -1 },
+    down: { dx: 0, dy: 1 },
+    left: { dx: -1, dy: 0 },
+    right: { dx: 1, dy: 0 },
+  }[direction];
+
+  if (!movement) {
+    return false;
+  }
+
+  engine.nextMove = movement;
+  return true;
+}
+
+function installBotBridge() {
+  if (!botModeEnabled) {
+    return;
+  }
+
+  window.__laserBot = {
+    getState: () => getBotSnapshot(),
+    move: (direction) => queueBotMove(direction),
+    setTestMode: (enabled) => {
+      testModeEnabled = Boolean(enabled);
+      renderTestModeState();
+      return testModeEnabled;
+    },
+    startCrazy: (options = {}) => {
+      if (typeof options.testMode === "boolean") {
+        testModeEnabled = options.testMode;
+        renderTestModeState();
+      }
+      startGame("crazy");
+      return getBotSnapshot();
+    },
+    startEndless: () => {
+      startGame("endless");
+      return getBotSnapshot();
+    },
+  };
+}
+
+function unlockSoundEffects() {
+  void soundEffects.unlock();
+}
 
 function switchScreen(screen) {
   currentScreen = screen;
@@ -326,11 +423,14 @@ function bindControls() {
   goPlayerNameInput.addEventListener("blur", savePlayerName);
 
   startEndlessButton.addEventListener("click", () => startGame("endless"));
+  startEndlessButton.addEventListener("pointerdown", unlockSoundEffects);
   startCrazyButton.addEventListener("click", () => startGame("crazy"));
+  startCrazyButton.addEventListener("pointerdown", unlockSoundEffects);
   openLeaderboardButton.addEventListener("click", () =>
     openLeaderboard("endless"),
   );
   retryButton.addEventListener("click", () => startGame(currentMode));
+  retryButton.addEventListener("pointerdown", unlockSoundEffects);
   saveScoreButton.addEventListener("click", () => {
     if (lastFinishedTime !== null) {
       void submitOnlineScore(lastFinishedTime);
@@ -349,6 +449,9 @@ function bindControls() {
   );
   leaderboardCrazyTab.addEventListener("click", () => openLeaderboard("crazy"));
 
+  window.addEventListener("pointerdown", unlockSoundEffects, { passive: true });
+  window.addEventListener("touchstart", unlockSoundEffects, { passive: true });
+
   window.addEventListener("keydown", (event) => {
     const target = event.target;
     const isTypingTarget =
@@ -364,6 +467,8 @@ function bindControls() {
     if (currentScreen === "GAME") {
       return;
     }
+
+    unlockSoundEffects();
 
     if (event.code === "Space" && currentScreen === "TITLE") {
       event.preventDefault();
@@ -421,6 +526,7 @@ function bindControls() {
 }
 
 function startGame(mode = "endless") {
+  unlockSoundEffects();
   engine?.stop();
   engine = null;
   currentMode = mode;
@@ -456,6 +562,9 @@ function startGame(mode = "endless") {
       }
       switchScreen("GAMEOVER");
     },
+    onLaserFire: (laser) => {
+      soundEffects.playLaser(laser.kind);
+    },
     onUpdateHUD: (time, round, laserIn, itemStatus = "", stageLabel = "") => {
       hudTimeVal.textContent = time.toFixed(1);
       gameRound.textContent = stageLabel
@@ -476,6 +585,7 @@ function startGame(mode = "endless") {
 }
 
 async function init() {
+  installBotBridge();
   bindControls();
   renderTestModeState();
   applyModeTheme();

@@ -25,7 +25,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['tests/**/*.js'],
+    files: ['tests/**/*.js', 'scripts/**/*.mjs'],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 2022,
